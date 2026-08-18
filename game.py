@@ -6,34 +6,53 @@ class Character():
 
     def describe(self): 
         return f'Name: {self.name} | Health: {self.health} | Level: {self.level}'  
+        
     def takeDamge(self, amount):
-        self.amount = amount
         self.health -= amount
-        return f'{self.name} takes {self.amount} damage. Remaining health: {self.health}'  
-
-ali = Character('Ali', health=50, level=17)
-# ahmed = Character('Ahmed')
-# print(ali.describe())
-# ali.takeDamge(67)
-# print(ali.describe())
+        return f'{self.name} takes {amount} damage. Remaining health: {self.health}'  
 
 class Warrior(Character):
+    allWarriors = []
+    
     def __init__(self, name, health=100, level=4):
         Character.__init__(self, name, health, level)
-        self.health = health
-        self.level = level
+        Warrior.allWarriors.append(self)
+        
     def attack(self, target):
-        self.target = target
-        self.amount = self.level *5
-        return f'{self.name} attacks {self.target} for {self.amount} '
+        amount = self.level * 5
+        target.takeDamge(amount)
+        return f'{self.name} attacks {target.name} for {amount} damage'
+        
+    @staticmethod
+    def listWarriors():
+        print(f"{len(Warrior.allWarriors)} warriors available: ")
+        for warrior in Warrior.allWarriors:
+            print(f"- {warrior.name} (Health: {warrior.health})") 
 
-nasser = Warrior('Nasser')
-print(nasser.attack('mansoor'))
+class Healer(Character):
+    def __init__(self, name, health=100, level=3):
+        Character.__init__(self, name, health, level)
+        
+    def heal(self, target):
+        if target == self:
+            return f"{self.name} attempts to heal himself, but it is blocked!"
+            
+        amount = self.level * 4 
+        target.health += amount
+        return f'{self.name} heals {target.name} for {amount} health. Remaining health: {target.health}'
 
-# class Kitten(Cat):
-#     def __init__(self, name, age=0, favorite_toy='string'):
-#         Cat.__init__(self, name, age)
-#         self.favorite_toy = favorite_toy
 
-#     def play(self):
-#         print(f'{self.name} plays with {self.favorite_toy}!')
+w1 = Warrior("Nawaf", health=90)
+w2 = Warrior("Mujtaba", health=120)
+h1 = Healer("Fadhel")
+c1 = Character("Abdulrahman", 100, 2) 
+
+print("Battle Starts")
+print(w1.attack(c1))  
+print(w2.attack(c1))  
+print(h1.heal(c1))    
+print(w2.attack(h1))  
+print(h1.heal(h1))    
+
+print("\nWarrior Statuses")
+Warrior.listWarriors()
